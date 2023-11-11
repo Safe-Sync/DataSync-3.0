@@ -3,6 +3,6 @@ public class App {
         Historico historicoConsumo = new Historico();
 
         //historicoConsumo.inserirHardware();
-        historicoConsumo.inserirVolatil();
+        historicoConsumo.logarFuncionario();
     }
 }

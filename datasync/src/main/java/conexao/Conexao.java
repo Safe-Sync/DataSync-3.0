@@ -14,8 +14,8 @@ public class Conexao {
         // Alterar aqui caso o seu banco não esteja como safesync
         data.setUrl("jdbc:mysql://localhost:3306/safesync");
 
-        data.setUsername("aluno");
-        data.setPassword("sptech");
+        data.setUsername("root");
+        data.setPassword("");
 
         conexao = new JdbcTemplate(data);
     }

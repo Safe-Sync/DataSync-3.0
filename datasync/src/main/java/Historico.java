@@ -6,12 +6,8 @@ import com.github.britooo.looca.api.group.processador.Processador;
 import com.github.britooo.looca.api.group.sistema.Sistema;
 import conexao.Conexao;
 import org.springframework.jdbc.core.JdbcTemplate;
-
-import java.util.Date;
-import java.util.Timer;
+import java.util.*;
 import java.sql.Timestamp;
-import java.util.TimerTask;
-
 
 public class Historico {
         Looca looca = new Looca();
@@ -39,23 +35,52 @@ public class Historico {
         Double memoriaTotal = memoria.getTotal().doubleValue() / 1000000000;
         Double memoriaUso = memoria.getEmUso().doubleValue() / 1000000000;
         Double memoriaDisponivel = memoria.getDisponivel().doubleValue() / 1000000000;
-
         Integer totalJanelas = looca.getGrupoDeJanelas().getTotalJanelas();
-
 
     public void inserirHardware() {
         conexao.update("INSERT INTO hardwares (idHardware, sistemaOperacional, totalCpu, totalDisco, totalRam) VALUES (?, ?, ?, ?, ?)",
                 1, nomeSistema, usoProcessador, discoTotal, memoriaTotal);
     }
 
+    public void logarFuncionario() {
+        Scanner leitor = new Scanner(System.in);
+
+        System.out.printf("""
+                Bem-vindo ao DataSync!
+                
+                E-mail:
+                """);
+        String emailFunc = leitor.nextLine();
+        System.out.println("Senha: ");
+        String cpf = leitor.nextLine();
+
+        executarLogin(emailFunc, cpf);
+    }
+
+    public void executarLogin(String emailFunc, String cpf) {
+        String emailFuncionario = null;
+        do {
+            emailFuncionario = conexao.queryForObject("SELECT email FROM funcionarios WHERE email = ? AND cpf = ?", String.class, emailFunc, cpf);
+
+            if(emailFuncionario.equals(null) || emailFuncionario.equals("")) {
+                System.out.println("E-mail ou senha errados, tente novamente!");
+                logarFuncionario();
+            } else {
+                inserirVolatil(emailFuncionario);
+            }
+        } while (emailFuncionario.equals(null) || emailFuncionario.equals(""));
+    }
+
     Integer idInsercao = 0;
-    public void inserirVolatil() {
+    public void inserirVolatil(String emailFuncionario) {
+        Integer fkHardware = conexao.queryForObject("SELECT idHardware FROM hardwares LEFT JOIN funcionarios ON fkFuncionario = idFuncionario WHERE email = ?", Integer.class, emailFuncionario);
+
         tempoInsercao.schedule(new TimerTask() {
             @Override
             public void run() {
                 Date data = new Date(); // Obtenha a hora da coleta dentro do método run()
-                conexao.update("INSERT INTO volateis (idVolateis, consumoCpu, consumoDisco, consumoRam, totalJanelas, dataHora) VALUES (?, ?, ?, ?, ?, ?)",
-                        idInsercao, usoProcessador, discoUso, memoriaUso, totalJanelas, new Timestamp(data.getTime()));
+                conexao.update("INSERT INTO volateis (idVolateis, consumoCpu, consumoDisco, consumoRam, totalJanelas, dataHora, fkHardware) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                        idInsercao, usoProcessador, discoUso, memoriaUso, totalJanelas, new Timestamp(data.getTime()), fkHardware);
                 System.out.println(String.format("""
         |===========================================|
         |        Sistema de captura Safe Sync       |
@@ -81,9 +106,6 @@ public class Historico {
             }
         }, 10000, 10000);
     }
-
-
-
 }
 
 
