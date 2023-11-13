@@ -12,10 +12,10 @@ public class Conexao {
         data.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
         // Alterar aqui caso o seu banco não esteja como safesync
-        data.setUrl("jdbc:mysql://localhost:3306/safesync");
+        data.setUrl("jdbc:mysql://localhost:3306/SafeSync");
 
-        data.setUsername("root");
-        data.setPassword("");
+        data.setUsername("aluno");
+        data.setPassword("sptech");
 
         conexao = new JdbcTemplate(data);
     }

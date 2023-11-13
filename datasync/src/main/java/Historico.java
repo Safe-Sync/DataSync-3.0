@@ -52,23 +52,24 @@ public class Historico {
                 """);
         String emailFunc = leitor.nextLine();
         System.out.println("Senha: ");
-        String cpf = leitor.nextLine();
+        String senha = leitor.nextLine();
 
-        executarLogin(emailFunc, cpf);
+        executarLogin(emailFunc, senha);
     }
 
-    public void executarLogin(String emailFunc, String cpf) {
+    public void executarLogin(String emailFunc, String senha) {
         String emailFuncionario = null;
         do {
-            emailFuncionario = conexao.queryForObject("SELECT email FROM funcionarios WHERE email = ? AND cpf = ?", String.class, emailFunc, cpf);
+            emailFuncionario = conexao.queryForObject("SELECT email FROM funcionarios WHERE email = ? AND senha = ?", String.class, emailFunc, senha);
 
-            if(emailFuncionario.equals(null) || emailFuncionario.equals("")) {
+            if(emailFuncionario == null || emailFuncionario.equals("")) {
                 System.out.println("E-mail ou senha errados, tente novamente!");
                 logarFuncionario();
             } else {
                 inserirVolatil(emailFuncionario);
             }
-        } while (emailFuncionario.equals(null) || emailFuncionario.equals(""));
+        } while (emailFuncionario == null || emailFuncionario.equals(""));
+
     }
 
     Integer idInsercao = 0;
