@@ -6,8 +6,12 @@ import com.github.britooo.looca.api.group.processador.Processador;
 import com.github.britooo.looca.api.group.sistema.Sistema;
 import conexao.Conexao;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.sql.Timestamp;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Historico {
         Looca looca = new Looca();
@@ -67,9 +71,21 @@ public class Historico {
                 logarFuncionario();
             } else {
                 inserirVolatil(emailFuncionario);
+                salvarEmailEmTxt(emailFuncionario);
             }
         } while (emailFuncionario == null || emailFuncionario.equals(""));
+    }
 
+    public void salvarEmailEmTxt(String email) {
+        try {
+            String horaColeta = new SimpleDateFormat(" HH:mm:ss  yyyy-MM-dd").format(new Date());
+            FileWriter writer = new FileWriter("C:\\Users\\a913505\\Desktop\\logs\\emailLog.txt");
+            writer.write("Ultimo Login : " + email + " --  Hora Login : " + horaColeta);
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Ocorreu um erro ao salvar o e-mail em um arquivo.");
+            e.printStackTrace();
+        }
     }
 
     Integer idInsercao = 0;
