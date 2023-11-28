@@ -1,6 +1,11 @@
 package entidades;
 
 import java.util.Scanner;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Sistema {
     private Funcionario funcionario;
@@ -55,20 +60,41 @@ public class Sistema {
 
     public void mensagemLoginValido(String nome) {
         System.out.printf("""
-                *------------------------------------*
-                Login efetuado!
-                Bem-vindo(a) %s
-                """, nome);
+            *------------------------------------*
+            Login efetuado!
+            Bem-vindo(a) %s
+            """, nome);
 
+        registrarLogin(nome);
         mensagemOpcoesHardware();
+    }
+
+    private void registrarLogin(String nome) {
+        String caminho = System.getProperty("user.home") + "\\Desktop\\Log";
+        String filePath = caminho + "\\logins.txt";
+        File directory = new File(caminho);
+        if (!directory.exists()) {
+            directory.mkdir();
+        }
+
+        try {
+            FileWriter writer = new FileWriter(filePath, true);
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            Date date = new Date();
+            String dataFormatada = formatter.format(date);
+            writer.write("Login bem-sucedido para: " + nome + " em " + dataFormatada + "\n");
+            writer.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void mensagemLoginInvalido() {
         Scanner leitor = new Scanner(System.in);
         System.out.printf("""
-                     Nenhum funcionário encontrado com o email e senha fornecidos.
-                     Deseja tentar novamente? (Y/N)
-                     """);
+                 Nenhum funcionário encontrado com o email e senha fornecidos.
+                 Deseja tentar novamente? (Y/N)
+                 """);
         String opcao = leitor.nextLine();
         if(opcao.equalsIgnoreCase("y")) {
             mensagemSolicitarEmailSenha();
@@ -76,6 +102,7 @@ public class Sistema {
             System.out.println("Você pode tentar fazer login novamente quando quiser, até mais!");
         }
     }
+
 
     public void setFuncAtual(String email, Integer fkEmpresa, Integer idFuncionario) {
         this.emailFuncAtual = email;
