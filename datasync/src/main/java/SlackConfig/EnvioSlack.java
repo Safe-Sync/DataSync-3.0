@@ -11,7 +11,7 @@ public class EnvioSlack {
 
 
         Double cpu = 89.03;
-        String mensagem = String.format("Seu uso atual de CPU é %.2f%% Ultrapassando o Limite de 60%% definido pela empresa \uD83D\uDE15", cpu);
+        String mensagem = String.format("AAAAAAAAAAAAAAAAAAAAA");
 
 
 
