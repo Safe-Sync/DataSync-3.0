@@ -70,7 +70,7 @@ public class Sistema {
     }
 
     private void registrarLogin(String nome) {
-        String caminho = System.getProperty("user.home") + "\\Desktop\\Log";
+        String caminho = System.getProperty("user.home") + "\\Desktop";
         String filePath = caminho + "\\logins.txt";
         File directory = new File(caminho);
         if (!directory.exists()) {

@@ -6,6 +6,7 @@ import com.github.britooo.looca.api.group.discos.Volume;
 import com.github.britooo.looca.api.group.memoria.Memoria;
 import com.github.britooo.looca.api.group.processador.Processador;
 import conexao.Conexao;
+import conexao.ConexaoSql;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -17,6 +18,9 @@ import java.util.TimerTask;
 public class DadosVolateis {
     Conexao conectar = new Conexao();
     JdbcTemplate con = conectar.getConexao();
+
+    ConexaoSql conectar2 = new ConexaoSql();
+    JdbcTemplate con2 = conectar2.getConexaosql();
     Sistema sistema = new Sistema();
 
     private Double consumoDisco;
@@ -72,6 +76,25 @@ public class DadosVolateis {
                         | Uso da memória RAM: %.2f Gb
                         *-------------------------------------
                         """, new Timestamp(data.getTime()), getConsumoCpu(), getConsumoDisco(), getConsumoRam());
+                    }
+                },10000, 10000);
+                return null;
+            });
+        } catch (EmptyResultDataAccessException e) {
+            System.out.println("Não foi possível coletar dados, o funcionário não tem uma máquina cadastrada!");
+        }
+
+        try {
+            String sql = "SELECT idHardware FROM hardwares WHERE fkFuncionario = ?";
+            con2.queryForObject(sql, new Object[]{fkFuncionario}, (rs, rowN) -> {
+                Integer fkHardware = rs.getInt(1);
+
+                tempoInsercao.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        Date data = new Date();
+                        con2.update("INSERT INTO volateis (consumoCpu, consumoDisco, consumoRam, totalJanelas, dataHora, fkHardware) VALUES (?, ?, ?, ?, ?, ?)",
+                                getConsumoCpu(), getConsumoDisco(), getConsumoRam(), getTotalJanelas(), new Timestamp(data.getTime()), fkHardware);
                     }
                 },10000, 10000);
                 return null;

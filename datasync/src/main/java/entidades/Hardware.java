@@ -7,12 +7,16 @@ import com.github.britooo.looca.api.group.memoria.Memoria;
 import com.github.britooo.looca.api.group.processador.Processador;
 import com.github.britooo.looca.api.group.sistema.Sistema;
 import conexao.Conexao;
+import conexao.ConexaoSql;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class Hardware {
     Conexao conectar = new Conexao();
     JdbcTemplate con = conectar.getConexao();
+
+    ConexaoSql conectar2 = new ConexaoSql();
+    JdbcTemplate con2 = conectar2.getConexaosql();
     Looca looca = new Looca();
     entidades.Sistema sistema = new entidades.Sistema();
 
@@ -51,6 +55,19 @@ public class Hardware {
             sistema.mensagemOpcoesHardware();
         } catch (EmptyResultDataAccessException e) {
             con.update("INSERT INTO hardwares (sistemaOperacional, totalCpu, totalDisco, totalRam, fkEmpresa, fkFuncionario) VALUES (?, ?, ?, ?, ?, ?)",
+                    getSistemaOperacional(), getTotalCpu(), getTotalDisco(), getTotalRam(), fkEmpresa, fkFuncionario);
+            System.out.println("Informações cadastradas!");
+            sistema.mensagemOpcoesHardware();
+
+        }
+
+        try {
+            con2.queryForObject("SELECT hardwares.fkFuncionario FROM funcionarios INNER JOIN hardwares ON idFuncionario = fkFuncionario WHERE funcionarios.email = ?", Integer.class, email);
+
+            System.out.println("Você já cadastrou as informações do hardware no sistema!");
+            sistema.mensagemOpcoesHardware();
+        } catch (EmptyResultDataAccessException e) {
+            con2.update("INSERT INTO hardwares (sistemaOperacional, totalCpu, totalDisco, totalRam, fkEmpresa, fkFuncionario) VALUES (?, ?, ?, ?, ?, ?)",
                     getSistemaOperacional(), getTotalCpu(), getTotalDisco(), getTotalRam(), fkEmpresa, fkFuncionario);
             System.out.println("Informações cadastradas!");
             sistema.mensagemOpcoesHardware();
