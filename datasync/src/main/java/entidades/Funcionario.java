@@ -4,13 +4,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
 import conexao.Conexao;
+import conexao.ConexaoSql;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class Funcionario {
     Conexao conectar = new Conexao();
     JdbcTemplate con = conectar.getConexao();
+
+    ConexaoSql conectar2 = new ConexaoSql();
+    JdbcTemplate con2 = conectar2.getConexaosql();
     Sistema sistema = new Sistema();
 
     private Integer idFuncionario;
@@ -22,6 +27,23 @@ public class Funcionario {
         try {
             String sql = "SELECT idFuncionario, nomeFuncionario, email, fkEmpresa FROM funcionarios WHERE email = ? AND senha = ?";
             con.queryForObject(sql, new Object[]{email, senha}, (rs, rowN) -> {
+                this.idFuncionario = rs.getInt(1);
+                this.nome = rs.getString(2);
+                this.email = rs.getString(3);
+                this.fkEmpresa = rs.getInt(4);
+                return null;
+            });
+
+            sistema.setFuncAtual(this.email, this.fkEmpresa, this.idFuncionario);
+            sistema.mensagemLoginValido(this.nome);
+        } catch (EmptyResultDataAccessException e) {
+            sistema.mensagemLoginInvalido();
+            criarLogErroBancoDados(email + " " + "Erro ao tentar fazer login: " + e.getMessage());
+        }
+
+        try {
+            String sql = "SELECT idFuncionario, nomeFuncionario, email, fkEmpresa FROM funcionarios WHERE email = ? AND senha = ?";
+            con2.queryForObject(sql, new Object[]{email, senha}, (rs, rowN) -> {
                 this.idFuncionario = rs.getInt(1);
                 this.nome = rs.getString(2);
                 this.email = rs.getString(3);
@@ -85,7 +107,7 @@ public class Funcionario {
 
     public void criarLogErroBancoDados(String mensagem) {
         String nomeArquivo = "errosLogin.txt";
-        String diretorio = System.getProperty("user.home") + "/Desktop/Logs/";
+        String diretorio = System.getProperty("user.home") + "/Desktop/";
 
         try {
             File diretorioLogs = new File(diretorio);
