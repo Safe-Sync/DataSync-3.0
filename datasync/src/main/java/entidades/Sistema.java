@@ -70,11 +70,15 @@ public class Sistema {
     }
 
     private void registrarLogin(String nome) {
-        String caminho = System.getProperty("user.home") + "\\Desktop";
-        String filePath = caminho + "\\logins.txt";
+        String caminho = System.getProperty("user.home") + File.separator + "Desktop" + File.separator + "Logs";
+        String filePath = caminho + File.separator + "logins.txt";
         File directory = new File(caminho);
         if (!directory.exists()) {
-            directory.mkdir();
+            boolean criada = directory.mkdirs();
+            if (!criada) {
+                System.err.println("Erro ao criar o diretório de logs.");
+                return;
+            }
         }
 
         try {
@@ -85,9 +89,11 @@ public class Sistema {
             writer.write("Login bem-sucedido para: " + nome + " em " + dataFormatada + "\n");
             writer.close();
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.err.println("Erro ao escrever no arquivo de log: " + e.getMessage());
         }
     }
+
+
 
     public void mensagemLoginInvalido() {
         Scanner leitor = new Scanner(System.in);
