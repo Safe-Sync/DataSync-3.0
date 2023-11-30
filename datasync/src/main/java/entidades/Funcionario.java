@@ -106,20 +106,27 @@ public class Funcionario {
 
 
     public void criarLogErroBancoDados(String mensagem) {
-        String nomeArquivo = "errosLogin.txt";
-        String diretorio = System.getProperty("user.home") + "/Desktop/";
+        String caminho = System.getProperty("user.home") + File.separator + "Desktop" + File.separator + "Logs";
+        String nomeArquivo = caminho + File.separator + "erros_banco_dados.txt";
+
+        File diretorioLogs = new File(caminho);
+        if (!diretorioLogs.exists()) {
+            boolean criada = diretorioLogs.mkdirs();
+            if (!criada) {
+                System.err.println("Erro ao criar o diretório de logs.");
+                return;
+            }
+        }
 
         try {
-            File diretorioLogs = new File(diretorio);
-            if (!diretorioLogs.exists()) {
-                diretorioLogs.mkdirs();
-            }
-
-            FileWriter writer = new FileWriter(diretorio + nomeArquivo, true);
+            FileWriter writer = new FileWriter(nomeArquivo, true);
             writer.write(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + " - " + mensagem + "\n");
             writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Erro ao escrever no arquivo de log: " + e.getMessage());
         }
     }
+
+
+
 }
