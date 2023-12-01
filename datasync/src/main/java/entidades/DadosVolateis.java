@@ -10,6 +10,7 @@ import conexao.ConexaoSql;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Timer;
@@ -23,36 +24,36 @@ public class DadosVolateis {
     JdbcTemplate con2 = conectar2.getConexaosql();
     Sistema sistema = new Sistema();
 
-    private Double consumoDisco;
-    private Double consumoCpu;
-    private Double consumoRam;
-    private Integer totalJanelas;
+    protected Double consumoDisco;
+    protected Double consumoCpu;
+    protected Double consumoRam;
+    protected Integer totalJanelas;
     private Timer tempoInsercao = new Timer();
 
-    private Double getConsumoDisco() {
+    protected Double getConsumoDisco() {
         DiscoGrupo disco = new DiscoGrupo();
         Volume volume = disco.getVolumes().get(0);
 
         return (volume.getTotal().doubleValue() / 1000000000) - (volume.getDisponivel().doubleValue() / 1000000000);
     }
 
-    private Double getConsumoCpu() {
+    protected Double getConsumoCpu() {
         Processador processador = new Processador();
         return processador.getUso();
     }
 
-    private Double getConsumoRam() {
+    protected Double getConsumoRam() {
         Memoria memoria = new Memoria();
         return memoria.getEmUso().doubleValue() / 1000000000;
     }
 
-    private Integer getTotalJanelas() {
+    protected Integer getTotalJanelas() {
         Looca looca = new Looca();
 
         return looca.getGrupoDeJanelas().getTotalJanelas();
     }
 
-    public void inserirVolateis(Integer fkFuncionario) {
+    public void inserirVolateis(Integer fkFuncionario){
         try {
             String sql = "SELECT idHardware FROM hardwares WHERE fkFuncionario = ?";
             con.queryForObject(sql, new Object[]{fkFuncionario}, (rs, rowN) -> {
@@ -76,7 +77,9 @@ public class DadosVolateis {
                         | Uso da memória RAM: %.2f Gb
                         *-------------------------------------
                         """, new Timestamp(data.getTime()), getConsumoCpu(), getConsumoDisco(), getConsumoRam());
+
                     }
+
                 },10000, 10000);
                 return null;
             });

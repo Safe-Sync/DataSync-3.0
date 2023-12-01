@@ -9,7 +9,7 @@ import java.net.URI;
 
 public class Slack {
     private static HttpClient client = HttpClient.newHttpClient();
-    private static final String url = "https://hooks.slack.com/services/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";
+    private static final String url = "https://hooks.slack.com/services/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";
 
     public static void enviarMensagem(JSONObject content) throws IOException, InterruptedException {
 
@@ -20,7 +20,7 @@ public class Slack {
 
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println(String.format("Status: %s", response.statusCode()));
-        System.out.println(String.format("Response: %s", response.body()));
+//        System.out.println(String.format("Status: %s", response.statusCode()));
+//        System.out.println(String.format("Response: %s", response.body()));
     }
 }
